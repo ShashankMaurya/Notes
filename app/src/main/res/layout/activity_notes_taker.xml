@@ -30,26 +30,43 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/edittext_title"
         android:hint="Title: "
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:singleLine="true"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"/>
+        android:layout_margin="10dp"
+        android:textColorHint="@color/white">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edittext_title"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/black"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/edittext_notes"
         android:hint="Add Notes: "
+        android:layout_margin="10dp"
         android:padding="8dp"
-        android:textSize="18sp"
-        android:textStyle="normal"
-        android:textColorHint="@color/white"
-        android:textColor="@color/white"/>
+        android:textColorHint="@color/white">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edittext_notes"
+            android:textStyle="normal"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/black"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>
