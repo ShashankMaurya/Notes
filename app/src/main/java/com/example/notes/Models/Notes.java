@@ -12,19 +12,19 @@ import java.io.Serializable;
 public class Notes implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    int ID=0;
+    public int ID=0;
 
     @ColumnInfo(name="title")
-    String title="";
+    public String title="";
 
     @ColumnInfo(name="note")
-    String note="";
+    public String note="";
 
     @ColumnInfo(name="date")
-    String date="";
+    public String date="";
 
     @ColumnInfo(name="pinned")
-    boolean pinned=false;
+    public boolean pinned=false;
 
     public int getID() {
         return ID;
