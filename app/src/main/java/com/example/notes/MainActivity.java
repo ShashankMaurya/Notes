@@ -1,10 +1,12 @@
 package com.example.notes;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -20,6 +22,8 @@ import com.example.notes.Adapters.NotesListAdapter;
 import com.example.notes.Database.RoomDB;
 import com.example.notes.Models.Notes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +36,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     List<Notes> notes=new ArrayList<>();
     RoomDB database;
     SearchView searchView_home;
-    Notes selectedNote;
+    Notes selectedNote, selectedNote_2;
 
     FloatingActionButton fab_add;
+    String deletedNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         database=RoomDB.getInstance(this);
         notes=database.mainDAO().getAll();
 
-        updateRecycler(notes);
+         updateRecycler(notes);
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +74,64 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
+        ItemTouchHelper itemTouchHelper= new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
     }
+
+    ItemTouchHelper.SimpleCallback simpleCallback= new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            int position = viewHolder.getAdapterPosition();
+            selectedNote_2=new Notes();
+            selectedNote_2=notes.get(position);
+
+            switch (direction)
+            {
+                case ItemTouchHelper.LEFT:
+//                    deletedNote=selectedNote_2.getTitle();
+//                    database.mainDAO().delete(selectedNote_2);
+//                    notes.remove(selectedNote_2);
+//                    notesListAdapter.notifyDataSetChanged();
+                    deleteNote(selectedNote_2);
+//                    Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_SHORT).show();
+
+//                    Snackbar.make(recyclerView, "Note Deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            database.mainDAO().insert(selectedNote_2);
+//                            notes.clear();
+//                            notes.addAll(database.mainDAO().getAll());
+//                            notesListAdapter.notifyDataSetChanged();
+//                        }
+//                    }).show();
+                    break;
+
+                case ItemTouchHelper.RIGHT:
+                    pinNote(selectedNote_2);
+//                    if (selectedNote_2.isPinned()) {
+//                        database.mainDAO().pin(selectedNote_2.getID(), false);
+//                        Toast.makeText(MainActivity.this, "Unpinned", Toast.LENGTH_SHORT).show();
+//                    }
+//                    else
+//                    {
+//                        database.mainDAO().pin(selectedNote_2.getID(), true);
+//                        Toast.makeText(MainActivity.this, "Pinned", Toast.LENGTH_SHORT).show();
+//                    }
+//                    notes.clear();
+//                    notes.addAll(database.mainDAO().getAll());
+//                    notesListAdapter.notifyDataSetChanged();
+                    break;
+            }
+
+        }
+    };
 
     private void filter(String newText) {
         List<Notes> filteredList=new ArrayList<>();
@@ -144,29 +206,73 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         switch(item.getItemId())
         {
             case R.id.pin:
-                if (selectedNote.isPinned()) {
-                    database.mainDAO().pin(selectedNote.getID(), false);
-                    Toast.makeText(MainActivity.this, "Unpinned", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    database.mainDAO().pin(selectedNote.getID(), true);
-                    Toast.makeText(MainActivity.this, "Pinned", Toast.LENGTH_SHORT).show();
-                }
-                notes.clear();
-                notes.addAll(database.mainDAO().getAll());
-                notesListAdapter.notifyDataSetChanged();
+//                if (selectedNote.isPinned()) {
+//                    database.mainDAO().pin(selectedNote.getID(), false);
+//                    Toast.makeText(MainActivity.this, "Unpinned", Toast.LENGTH_SHORT).show();
+//                }
+//                else
+//                {
+//                    database.mainDAO().pin(selectedNote.getID(), true);
+//                    Toast.makeText(MainActivity.this, "Pinned", Toast.LENGTH_SHORT).show();
+//                }
+//                notes.clear();
+//                notes.addAll(database.mainDAO().getAll());
+//                notesListAdapter.notifyDataSetChanged();
+                pinNote(selectedNote);
                 return true;
 
             case R.id.delete:
-                database.mainDAO().delete(selectedNote);
-                notes.remove(selectedNote);
-                notesListAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_SHORT).show();
+//                database.mainDAO().delete(selectedNote);
+//                notes.remove(selectedNote);
+//                notesListAdapter.notifyDataSetChanged();
+//                Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_SHORT).show();
+                deleteNote(selectedNote);
                 return true;
 
             default: return false;
         }
 //        return false;
+    }
+
+    public void pinNote(Notes notes)
+    {
+        if (notes.isPinned()) {
+            database.mainDAO().pin(notes.getID(), false);
+            Toast.makeText(MainActivity.this, "Unpinned", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            database.mainDAO().pin(notes.getID(), true);
+            Toast.makeText(MainActivity.this, "Pinned", Toast.LENGTH_SHORT).show();
+        }
+        this.notes.clear();
+        this.notes.addAll(database.mainDAO().getAll());
+        notesListAdapter.notifyDataSetChanged();
+    }
+
+    public void deleteNote(Notes notes)
+    {
+        database.mainDAO().delete(notes);
+        this.notes.remove(notes);
+        notesListAdapter.notifyDataSetChanged();
+//        Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, "Note Deleted", Snackbar.LENGTH_LONG).setAction("Undo", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                database.mainDAO().insert(notes);
+//                this.notes.clear();
+//                this.notes.addAll(database.mainDAO().getAll());
+//                notesListAdapter.notifyDataSetChanged();
+                undoDelete(notes);
+            }
+        }).show();
+    }
+
+    public void undoDelete(Notes notes)
+    {
+        database.mainDAO().insert(notes);
+        this.notes.clear();
+        this.notes.addAll(database.mainDAO().getAll());
+        notesListAdapter.notifyDataSetChanged();
     }
 }
