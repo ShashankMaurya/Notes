@@ -1,3 +1,4 @@
 # Notes
 
-A Notes application using Java and RoomDB
+An interactive Notes application with many features which uses Room-
+Database to store and update the Notes; Designed using Java.
